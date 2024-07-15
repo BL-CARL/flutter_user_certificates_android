@@ -4,7 +4,7 @@ version: 0.0.1
 repository: https://github.com/johnstef99/flutter_user_certificates_android
 
 environment:
-  sdk: '>=3.4.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
   flutter: '>=3.3.0'
 
 dependencies:

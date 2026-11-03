@@ -31,16 +31,18 @@ class FlutterUserCertificatesAndroidPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   private fun getUserCertificates(result: Result) {
-    val userInstalledCaCertificates: List<X509Certificate> = try {
+    val userInstalledCaCertificates: Map<String, X509Certificate> = try {
       val keyStore = KeyStore.getInstance("AndroidCAStore")
       keyStore.load(null, null)
-      val aliasList = keyStore.aliases().toList().filter { it.startsWith("user") }
-      aliasList.map { keyStore.getCertificate(it) as X509Certificate }
+      keyStore.aliases().toList()
+        .filter { it.startsWith("user") }
+        .associateWith { keyStore.getCertificate(it) as X509Certificate }
     } catch (e: Exception) {
-      emptyList()
+      emptyMap()
     }
 
-    val mapOfBytes = userInstalledCaCertificates.associate { it.issuerX500Principal.name to it.encoded }
+    // Keyed by keystore alias: several certificates can share the same issuer.
+    val mapOfBytes = userInstalledCaCertificates.mapValues { it.value.encoded }
     result.success(mapOfBytes)
   }
 }
